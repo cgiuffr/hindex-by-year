@@ -39,17 +39,19 @@ author = ' '.join(args.author)
 # Query Scholar and index citations per publication per year
 print("Scanning publications for author '%s'..." % author)
 search_query = scholarly.search_author(author)
-authorObject = next(search_query).fill()
+authorObject = scholarly.fill(next(search_query))
 pub_cites_per_year = []
 minYear = 10000
 maxYear = 0
-for pub in authorObject.publications:
-  cites_per_year = pub.fill().cites_per_year
+for p in authorObject['publications']:
+  pub = scholarly.fill(p)
+  cites_per_year = pub['cites_per_year']
   pub_cites_per_year.append(cites_per_year)
-  print(" * '%s' (%d)" % (pub.bib['title'], sum(cites_per_year.values())))
-  if 'year' not in pub.bib or pub.bib['year'] == 'NA':
+  bib = pub['bib']
+  print(" * '%s' (%d)" % (bib['title'], sum(cites_per_year.values())))
+  if 'pub_year' not in bib or bib['pub_year'] == 'NA':
     continue
-  year = int(pub.bib['year'])
+  year = int(bib['pub_year'])
   if year < minYear:
     minYear = year
   if year > maxYear:
